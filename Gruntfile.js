@@ -4,73 +4,111 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
   
-    sass: {
+  	sass: {
       dev: {
-        options: {
-          outputStyle: 'compact'
-        },
+      	options: {
+	      	outputStyle: 'nested'
+      	},
         files: [{
-          expand: true,
-          cwd: 'dev/css/',
-          src: ['*.scss'],
-          dest: 'css/',
-          ext: '.css'
-        }]
+	        expand: true,
+			    cwd: 'dev/scss/',
+			    src: ['**/*.scss'],
+			    dest: 'res/css/',
+			    ext: '.css'
+			    }]
       }
     },
+		
+		autoprefixer: {
+			dev: {
+				options: {
+					browsers: ['last 4 versions', 'ie 8', 'ie 9']
+				},
+		    expand: true,
+		    cwd: 'res/css/',
+		    src: ['**/*.css'],
+		    dest: 'res/css/'
+			}
+	  },
     
     cssmin: {
-      minify: {
-        files: [{
-          expand: true,
-          cwd: 'css/',
-          src: ['*.css', '!*.min.css'],
-          dest: 'css/',
-          ext: '.min.css'
-        }]        
-      }
-    },
-    
-    imagemin: {
-      dynamic: {
-        files: [{
-          expand: true,
-          cwd: 'img/',
-          src: ['**/*.{png,jpg,gif,JPG}'],
-          dest: 'img/'
-        }]
-      }
-    },
-    
-    autoprefixer: {
-      dev: {
-        options: {
-          browsers: ["last 4 versions", "ios 6","ie 9"]
-        },
-        expand: true,
-        cwd: 'css/',
-        src: ['*.css', '!*.min.css'],
-        dest: 'css/'
-      }
-    },
-      
+		  dev: {
+		  	files: [{
+	        expand: true,
+			    cwd: 'res/css/',
+			    src: ['**/*.css','!**/*.min.css'],
+			    dest: 'res/css/',
+			    ext: '.min.css'
+	      }]		    
+		  }
+		},
+		
+		clean: {
+			css: ['res/css/**/*.css', '!res/css/**/*.min.css']
+		},
+		
+		imagemin: {
+			dev: {
+	      files: [{
+	        expand: true,
+	        cwd: 'dev/img/',
+	        src: ['**/*.{png,jpg,gif,JPG}'],
+	        dest: 'res/img/'
+	      }]
+	    }
+		},
+		
+		delete_sync: {
+		  dev: {
+		    cwd: 'res/img/',
+		    src: ['**/*.{png,jpg,gif,JPG}'],
+		    syncWith: 'dev/img/'
+		  }
+		},
+			
     watch: {
-      sass: {
-        files: 'dev/sass/**/*.scss',
-        tasks: ['sass:dev','autoprefixer:dev','cssmin:minify']
-      },  
+	    //CSS
+    	css: {
+	    	files: 'dev/scss/**/*.scss',
+	    	tasks: ['sass:dev','autoprefixer:dev','cssmin:dev','clean:css'],
+	    	options: {
+          livereload: true
+        }
+    	},
+    	
+    	// Images
+    	images: {
+	    	files: 'dev/img/**/*.{png,jpg,gif,JPG,GIF,PNG}',
+	    	tasks: ['imagemin:dev'],
+	    	options: {
+          livereload: true,
+          event: ['added','changed'],
+        }
+    	},
+    	
+    	imagesync: {
+	    	files: 'dev/img/**/*',
+	    	tasks: ['delete_sync:dev'],
+	    	options: {
+          event: ['deleted'],
+        }
+    	},
+    	
+    	// Alteração FrontEnd
       livereload: {
-        files: ['**/*.html','js/*.js','dev/**/*'],
+        files: ['**/*.{php,html,htm,inc}','res/**/*.js'],
         options: {
           livereload: true
         }
       },
-    },
-  });
+		},
+	});
   
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-imagemin');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-delete-sync');
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-autoprefixer');
   

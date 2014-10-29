@@ -1,25 +1,15 @@
 {
-  "name": "frmnt-",
-  "version": "0.0.0",
-  "description": "",
-  "repository": {
-    "type": "git",
-    "url": "."
-  },
-  "keywords": [
-    "fermento"
-  ],
-  "author": {
-    "name": "Luiz Júnior",
-    "email": "luiz@fermen.to",
-    "url": "http://fermen.to"
-  },
+  "name": "targo-frontend",
+  "version": "0.0.1",
+  "main": "index.html",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-autoprefixer": "^1.0.1",
-    "grunt-contrib-cssmin": "^0.9.0",
-    "grunt-contrib-imagemin": "^0.9.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-cssmin": "^0.10.0",
+    "grunt-contrib-imagemin": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-sass": "^0.13.1"
+    "grunt-delete-sync": "0.0.2",
+    "grunt-sass": "^0.16.0"
   }
 }
