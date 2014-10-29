@@ -1,7 +1,18 @@
 {
-  "name": "targo-frontend",
+  "name": "frmnt-can",
   "version": "0.0.1",
-  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "keywords": [
+    "fermento"
+  ],
+  "author": {
+    "name": "Luiz Júnior",
+    "email": "luiz@fermen.to",
+    "url": "http://fermen.to"
+  },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-autoprefixer": "^1.0.1",
