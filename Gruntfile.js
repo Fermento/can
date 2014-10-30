@@ -9,7 +9,7 @@ module.exports = function(grunt) {
 				files: [{
 					expand: true,
 					cwd: 'dev/scss/',
-					src: ['**/*.scss'],
+					src: ['**/*.scss','!_*'],
 					dest: 'res/css/',
 					ext: '.css'
 				}]
@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 		},
 		watch: {
 			//CSS
-			css: {
+			scss: {
 				files: 'dev/scss/**/*.scss',
 				tasks: ['sass:dev', 'autoprefixer:dev', 'cssmin:dev', 'clean:css'],
 				options: {
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
 			},
 			// Images
 			images: {
-				files: 'dev/img/**/*.{png,jpg,gif,JPG,GIF,PNG}',
+				files: 'dev/img/**/*',
 				tasks: ['imagemin:dev'],
 				options: {
 					livereload: true,
