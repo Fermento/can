@@ -1,6 +1,7 @@
 'use strict';
 module.exports = function(grunt) {
 	grunt.initConfig({
+		//## CSS
 		sass: {
 			dev: {
 				options: {
@@ -9,7 +10,7 @@ module.exports = function(grunt) {
 				files: [{
 					expand: true,
 					cwd: 'dev/scss/',
-					src: ['**/*.scss','!_*'],
+					src: ['**/*.scss', '!_*'],
 					dest: 'res/css/',
 					ext: '.css'
 				}]
@@ -40,6 +41,33 @@ module.exports = function(grunt) {
 		clean: {
 			css: ['res/css/**/*.css', '!res/css/**/*.min.css']
 		},
+		//## Javascript
+		uglify: {
+			options: {
+				//sourceMap: 'js/source-map.js.map'
+			},
+			dev: {
+				files: [{
+					expand: true,
+					cwd: 'dev/js/',
+					src: ['**/*.js', '!_*'],
+					dest: 'res/js/',
+					ext: '.min.js'
+				}]
+			}
+		},
+		jshint: {
+			// configure JSHint (documented at http://www.jshint.com/docs/)
+			options: {
+				globals: {
+					jQuery: true,
+					console: true,
+					module: true
+				}
+			},
+			files: ['dev/js/**/*.js']
+		},
+		//## Imagens
 		imagemin: {
 			dev: {
 				files: [{
@@ -57,11 +85,20 @@ module.exports = function(grunt) {
 				syncWith: 'dev/img/'
 			}
 		},
+		//## Watch
 		watch: {
 			//CSS
 			scss: {
 				files: 'dev/scss/**/*.scss',
 				tasks: ['sass:dev', 'autoprefixer:dev', 'cssmin:dev', 'clean:css'],
+				options: {
+					livereload: true
+				}
+			},
+			//JS
+			js: {
+				files: 'dev/js/**/*.js',
+				tasks: ['jshint','uglify:dev'],
 				options: {
 					livereload: true
 				}
@@ -84,7 +121,7 @@ module.exports = function(grunt) {
 			},
 			// Alteração FrontEnd
 			livereload: {
-				files: ['**/*.{php,html,htm,inc}', 'res/**/*.js'],
+				files: ['**/*.{php,html,htm,inc}'],
 				options: {
 					livereload: true
 				}
@@ -93,6 +130,8 @@ module.exports = function(grunt) {
 	});
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-imagemin');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-delete-sync');
