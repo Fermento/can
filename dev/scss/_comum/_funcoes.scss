@@ -1,0 +1,7 @@
+@function em($n) {
+  @return ($n / 16) * 1em;
+}
+
+@function por($n) {
+  @return ($n / 960) * 1%;
+}
