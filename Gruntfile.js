@@ -1,12 +1,24 @@
 'use strict';
+var banner1 = "\
+/*\n\
+   'oO0K0kdc'.   .o\n\
+ :ko,.  ...',::;dk,     fermen.to\n\
+oK.            .K,      <%= pkg.name %> for <%= pkg.client %> - v<%= pkg.version %>\n\
+0x    .K:      x0       -\n\
+'0:   dk.    .,KO:o.'   <%= grunt.template.today('yyyy-mm-dd') %>\n\
+  ':;:.    ck'cX:\n\
+       ,  ,.  kO\n\
+     ;K:     :K.\n\
+     ,0,   .od.\n\
+      .oOOOo.\n\
+*/\n";
+
 module.exports = function(grunt) {
 	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
 		//## CSS
 		sass: {
 			dev: {
-				options: {
-					outputStyle: 'nested'
-				},
 				files: [{
 					expand: true,
 					cwd: 'dev/scss/',
@@ -29,6 +41,10 @@ module.exports = function(grunt) {
 		},
 		cssmin: {
 			dev: {
+				options: {
+					 banner: banner1,
+					 sourceMap: true
+				},
 				files: [{
 					expand: true,
 					cwd: 'res/css/',
@@ -44,7 +60,9 @@ module.exports = function(grunt) {
 		//## Javascript
 		uglify: {
 			options: {
-				//sourceMap: 'js/source-map.js.map'
+				//sourceMap: 'js/source-map.js.map',
+				 banner: banner1,
+				 sourceMap: true
 			},
 			dev: {
 				files: [{
