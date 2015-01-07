@@ -54,6 +54,15 @@ module.exports = function(grunt) {
 				}]
 			}
 		},
+        concat: {
+           options: {
+             separator: ';',
+           },
+           dev: {
+             src: ['res/js/lib/conf.js','res/js/lib/table.js','res/js/lib/init.js'],
+             dest: 'res/js/fermento.js',
+           }
+       },
 		clean: {
 			css: ['res/css/**/*.css', '!res/css/**/*.min.css']
 		},
@@ -121,6 +130,10 @@ module.exports = function(grunt) {
 					livereload: true
 				}
 			},
+			concat: {
+				files: ['res/js/lib/conf.js','res/js/lib/table.js','res/js/lib/init.js'],
+				tasks: ['concat:dev']
+			},
 			// Images
 			images: {
 				files: 'dev/img/**/*',
@@ -146,15 +159,14 @@ module.exports = function(grunt) {
 			},
 		},
 	});
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-imagemin');
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-delete-sync');
-	grunt.loadNpmTasks('grunt-sass');
-	grunt.loadNpmTasks('grunt-autoprefixer');
+	
+	// Time grunt to measure the tasks time
+	require('time-grunt')(grunt);
+	// Load grunt tasks automatically
+	require('load-grunt-tasks')(grunt);
+	// Making grunt default to force in order not to break the project if something fail.
+	grunt.option('force', true);
+	
 	// Default
 	grunt.registerTask('default', 'watch');
 };
