@@ -45,7 +45,7 @@ caminhos = {
 
 	"hogan": {
 		"origem": path.join(PASTA_DEV, 'js/**/*.hogan'),
-		"destino": path.join(PASTA_DEST, 'app/views/')
+		"destino": path.join(PASTA_DEST, 'app/')
 	},
 
 	"img": {
@@ -86,6 +86,7 @@ gulp.task('css', function(event) {
 		.pipe(p.plumber())
 		// Pré-processamento
 		.pipe(p.sass())
+		.pipe(prd(p.shorthand()))
 		.pipe(p.pleeease({"minifier": prd(), "autoprefixer": {browsers: ['last 2 versions', 'ie 9', '> 1%']}}))
 		.pipe(prd(p.csso()))
 		// Cabeçalho
@@ -133,7 +134,10 @@ gulp.task('hogan', function(event) {
 		.pipe(p.plumber())
 		// Compilador
 		.pipe(p.hoganPrecompile())
-		.pipe(p.declare({namespace: 'views', noRedeclare: true}))
+		//.pipe(p.defineModule('plain'))
+		.pipe(p.declare({namespace: 'App.Views', noRedeclare: true}))
+		// Concatena arquivos
+		.pipe(p.concat('views.js'))
 		// Minificador
 		.pipe(prd(p.uglify()))
 		// Header
@@ -149,7 +153,6 @@ gulp.task('hogan', function(event) {
  */
 
 //TODO: Kraken.io
-//TODO: Minify
 //TODO: Sync (on Delete)
 gulp.task('img', function(a,b,c) {
 	return gulp.src(caminhos.img.origem)
