@@ -1,6 +1,6 @@
 {
   "name": "frmnt-can",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "repository": {
     "type": "git",
     "url": "."
@@ -8,23 +8,45 @@
   "keywords": [
     "fermento"
   ],
-  "author": {
-    "name": "Luiz Júnior",
-    "email": "luiz@fermen.to",
-    "url": "http://fermen.to"
-  },
+  "author": [
+    {
+      "name": "Luiz Júnior",
+      "email": "luiz@fermen.to",
+      "url": "http://fermen.to"
+    },
+    {
+      "name": "Maximiliano Moraes",
+      "email": "max@fermen.to"
+    },
+    {
+      "name": "Kirmayr Thomaz",
+      "email": "kirmayr@fermen.to"
+    }
+  ],
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-autoprefixer": "^1.0.1",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-cssmin": "^0.10.0",
-    "grunt-contrib-imagemin": "^0.9.1",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.6.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-delete-sync": "0.0.2",
-    "grunt-sass": "^0.16.0",
-    "load-grunt-tasks": "^2.0.0",
-    "time-grunt": "^1.0.0"
+    "del": "^2.1.0",
+    "gulp": "^3.9.0",
+    "gulp-bump": "^1.0.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-csso": "^1.0.1",
+    "gulp-environments": "^0.1.1",
+    "gulp-header": "^1.7.1",
+    "gulp-imagemin": "^2.4.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-load-plugins": "^1.1.0",
+    "gulp-pleeease": "^2.0.2",
+    "gulp-plumber": "^1.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.1.0",
+    "gulp-size": "^2.0.0",
+    "gulp-uglify": "^1.5.1",
+    "gulp-util": "^3.0.7",
+    "imagemin-pngquant": "^4.2.0",
+    "jshint": "^2.8.0",
+    "mversion": "^1.10.1",
+    "path": "^0.12.7"
   }
 }
+
+        
