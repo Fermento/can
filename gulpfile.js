@@ -45,7 +45,7 @@ caminhos = {
 
 	"hogan": {
 		"origem": path.join(PASTA_DEV, 'js/**/*.hogan'),
-		"destino": path.join(PASTA_DEST, 'app/')
+		"destino": path.join(PASTA_DEST, 'app/views/')
 	},
 
 	"img": {
