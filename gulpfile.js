@@ -1,12 +1,12 @@
 // Módulos (Requires)
-var gulp = require('gulp')
+var gulp = require('gulp');
 var gutil = require('gulp-util');
 var p = require('gulp-load-plugins')();
 
 // //// Utilitários
-var path = require('path')
-var pngquant = require('imagemin-pngquant')
-var del = require('del');
+var path = require('path');
+var pngquant = require('imagemin-pngquant');
+var runSequence = require('run-sequence');
 
 // Ambientes
 var dev = p.environments.development;
@@ -21,13 +21,6 @@ var banner = ""
 var caminhos = {}
 var pkg;
 var worker;
-
-// Incrementa versão
-if(prd()) {
-	gulp.src('./package.json')
-    .pipe(p.bump({type: 'minor'}))
-    .pipe(gulp.dest('./'))
-}
 
 // Configurações do Package (projeto)
 pkg = require('./package.json')
@@ -47,6 +40,11 @@ caminhos = {
 
 	"js": {
 		"origem": path.join(PASTA_DEV, 'js/**/*.js'),
+		"destino": path.join(PASTA_DEST, 'app/')
+	},
+
+	"hogan": {
+		"origem": path.join(PASTA_DEV, 'js/**/*.hogan'),
 		"destino": path.join(PASTA_DEST, 'app/')
 	},
 
@@ -89,12 +87,12 @@ gulp.task('css', function(event) {
 		// Pré-processamento
 		.pipe(p.sass())
 		.pipe(p.pleeease({"minifier": prd(), "autoprefixer": {browsers: ['last 2 versions', 'ie 9', '> 1%']}}))
-		.pipe(prd(p.csso))
+		.pipe(prd(p.csso()))
 		// Cabeçalho
 		.pipe(p.header(banner, pkg))
 		// Minificar e otimizar
 		.pipe(p.rename({extname: ".min.css"}))
-		.pipe(prd(p.size))
+		.pipe(prd(p.size()))
 		.pipe(gulp.dest(caminhos.css.destino))
 		//
 		.pipe(dev(p.livereload()))
@@ -125,6 +123,28 @@ gulp.task('js', function(event) {
 })
 
 /*
+ * Hogan
+ */
+
+//TODO: Output (Console)
+
+gulp.task('hogan', function(event) {
+	return gulp.src(caminhos.hogan.origem)
+		.pipe(p.plumber())
+		// Compilador
+		.pipe(p.hoganPrecompile())
+		.pipe(p.declare({namespace: 'views', noRedeclare: true}))
+		// Minificador
+		.pipe(prd(p.uglify()))
+		// Header
+		.pipe(p.header(banner, pkg))
+		// Saída
+		.pipe(gulp.dest(caminhos.hogan.destino))
+		// Atualizar Navegador
+		.pipe(dev(p.livereload()));
+})
+
+/*
  * Imagens
  */
 
@@ -132,15 +152,25 @@ gulp.task('js', function(event) {
 //TODO: Minify
 //TODO: Sync (on Delete)
 gulp.task('img', function(a,b,c) {
-	// return gulp.src(caminhos.img.origem)
-	// 	.pipe(p.plumber())
-	// 	// Minifica
-	// 	.pipe(p.imagemin({ optimizationLevel: 3, progressive: true, interlaced: true, verbose: true, use: [pngquant()] }))
-	// 	// Saída
-	// 	.pipe(gulp.dest(caminhos.img.destino))
-	// 	// Atualizar Navegador
-	// 	.pipe(dev(p.livereload()));
+	return gulp.src(caminhos.img.origem)
+		.pipe(p.plumber())
+		// Minifica
+		.pipe(p.imagemin({ optimizationLevel: 3, progressive: true, interlaced: true, verbose: true, use: [pngquant()] }))
+		// Saída
+		.pipe(gulp.dest(caminhos.img.destino))
+		// Atualizar Navegador
+		.pipe(dev(p.livereload()));
 })
+
+/*
+ * Incrementa versão
+ */
+gulp.task('ver', function(){
+	// Incrementa versão
+	gulp.src('./package.json')
+    .pipe(p.bump({type: 'minor'}))
+    .pipe(gulp.dest('./'))
+});
 
 /*
  * Libs (JS)
@@ -154,12 +184,8 @@ gulp.task('libs', function(event) {
 		.pipe(gulp.dest(caminhos.libs.destino))
 })
 
-/*
- * Funções Auxiliares
- */
-
 /**
- ** Core
+ ** Watch
  **/
 gulp.task('watch', function() {
 	// Iniciar LiveReload
@@ -169,6 +195,7 @@ gulp.task('watch', function() {
 	gulp.watch(caminhos.css.origem, ['css']);
 	gulp.watch(caminhos.js.origem, ['js']);
 	gulp.watch(caminhos.libs.origem, ['libs']);
+	gulp.watch(caminhos.hogan.origem, ['hogan']);
 
 	// Imagens
 	var imgs = gulp.watch(caminhos.img.origem);
@@ -195,6 +222,24 @@ gulp.task('watch', function() {
 	});
 
 });
+
+/*
+ * Preparar para deploy
+ */
+gulp.task('build', function(){
+	// Seta Producao
+	p.environments.current(prd);
+
+	// Log
+	gutil.log('Gerando Produção');
+
+	// Tarefas
+	runSequence(
+		'ver',
+		['css','js','libs','hogan']);
+	// Tarefas
+});
+
 
 // Define a tarefa padrão
 gulp.task('default', ['watch']);

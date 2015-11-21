@@ -1,6 +1,6 @@
 {
   "name": "frmnt-can",
-  "version": "0.2.0",
+  "version": "0.7.0",
   "repository": {
     "type": "git",
     "url": "."
@@ -24,13 +24,14 @@
     }
   ],
   "devDependencies": {
-    "del": "^2.1.0",
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
     "gulp-concat": "^2.6.0",
     "gulp-csso": "^1.0.1",
+    "gulp-declare": "^0.3.0",
     "gulp-environments": "^0.1.1",
     "gulp-header": "^1.7.1",
+    "gulp-hogan-precompile": "^0.1.1",
     "gulp-imagemin": "^2.4.0",
     "gulp-jshint": "^2.0.0",
     "gulp-livereload": "^3.8.1",
@@ -44,9 +45,7 @@
     "gulp-util": "^3.0.7",
     "imagemin-pngquant": "^4.2.0",
     "jshint": "^2.8.0",
-    "mversion": "^1.10.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "run-sequence": "^1.1.5"
   }
 }
-
-        
