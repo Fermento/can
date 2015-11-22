@@ -1,6 +1,6 @@
 {
   "name": "frmnt-can",
-  "version": "0.8.0",
+  "version": "0.11.0",
   "repository": {
     "type": "git",
     "url": "."
@@ -24,6 +24,7 @@
     }
   ],
   "devDependencies": {
+    "glob-parent": "^2.0.0",
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
     "gulp-concat": "^2.6.0",
@@ -47,6 +48,7 @@
     "gulp-util": "^3.0.7",
     "imagemin-pngquant": "^4.2.0",
     "jshint": "^2.8.0",
+    "mkdirp": "^0.5.1",
     "path": "^0.12.7",
     "run-sequence": "^1.1.5"
   }

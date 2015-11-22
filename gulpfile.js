@@ -1,3 +1,5 @@
+"use strict";
+
 // Módulos (Requires)
 var gulp = require('gulp');
 var gutil = require('gulp-util');
@@ -34,17 +36,17 @@ pkg = require('./package.json')
 // Seta os caminhos padrão
 caminhos = {
 	"css": {
-		"origem": path.join(PASTA_DEV, 'scss/**/*.scss'),
-		"destino": path.join(PASTA_DEST, 'css/')
+		"origem": path.join(PASTA_DEV, 'app/**/*.scss'),
+		"destino": path.join(PASTA_DEST, 'app/')
 	},
 
 	"js": {
-		"origem": path.join(PASTA_DEV, 'js/**/*.js'),
+		"origem": path.join(PASTA_DEV, 'app/**/*.js'),
 		"destino": path.join(PASTA_DEST, 'app/')
 	},
 
 	"hogan": {
-		"origem": path.join(PASTA_DEV, 'js/**/*.hogan'),
+		"origem": path.join(PASTA_DEV, 'app/**/*.hogan'),
 		"destino": path.join(PASTA_DEST, 'app/')
 	},
 
@@ -104,7 +106,6 @@ gulp.task('css', function(event) {
  */
 
 //TODO: Output (Console)
-
 gulp.task('js', function(event) {
 	return gulp.src(caminhos.js.origem)
 		.pipe(p.plumber())
@@ -187,12 +188,32 @@ gulp.task('libs', function(event) {
 		.pipe(gulp.dest(caminhos.libs.destino))
 })
 
+/*
+ * Inicializa Pasta
+ */
+
+//TODO: Output (Console)
+
+gulp.task('initDir', function(event) {
+	var mkdirp = require('mkdirp');
+	var globParent = require('glob-parent');
+
+	for (let key in caminhos) {
+		mkdirp(globParent(caminhos[key].origem));
+	}
+
+	return;
+})
+
 /**
  ** Watch
  **/
 gulp.task('watch', function() {
 	// Iniciar LiveReload
 	p.livereload.listen();
+
+	// Iniciarlizar pastas
+	gulp.start('initDir');
 
 	// Watches
 	gulp.watch(caminhos.css.origem, ['css']);
