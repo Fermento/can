@@ -34,6 +34,7 @@
     "gulp-environments": "^0.1.1",
     "gulp-header": "^1.7.1",
     "gulp-hogan-precompile": "^0.1.1",
+    "gulp-ignore": "^2.0.1",
     "gulp-imagemin": "^2.4.0",
     "gulp-jshint": "^2.0.0",
     "gulp-livereload": "^3.8.1",
@@ -45,11 +46,13 @@
     "gulp-shorthand": "^1.1.0",
     "gulp-size": "^2.0.0",
     "gulp-uglify": "^1.5.1",
+    "gulp-using": "0.0.1",
     "gulp-util": "^3.0.7",
     "imagemin-pngquant": "^4.2.0",
     "jshint": "^2.8.0",
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
+    "rimraf": "^2.4.4",
     "run-sequence": "^1.1.5"
   }
 }

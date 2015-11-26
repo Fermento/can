@@ -7,6 +7,7 @@ var p = require('gulp-load-plugins')();
 
 // //// Utilitários
 var path = require('path');
+var rimraf = require('rimraf');
 var pngquant = require('imagemin-pngquant');
 var runSequence = require('run-sequence');
 
@@ -58,6 +59,10 @@ caminhos = {
 	"libs": {
 		"origem": path.join(PASTA_DEV, 'lib/**/*.!(md|txt|html|json)'),
 		"destino": path.join(PASTA_DEST, 'lib/')
+	},
+
+	"dist": {
+		"origem": 'dist/',
 	}
 }
 
@@ -203,6 +208,37 @@ gulp.task('initDir', function(event) {
 	}
 
 	return;
+});
+
+/*
+ * Gera output
+ */
+
+//TODO: Output (Console)
+
+gulp.task('dist', function(event) {
+	// Limpa pasta de deploy
+	gutil.log("Limpando /dist");
+	rimraf('/dist/**', function (er) {
+    // Seleciona arquivos
+		gutil.log("Gerando /dist");
+		gulp.src([
+				'**/*',
+				'!package.json',
+				'!gulpfile.js',
+				'!bower.json',
+				'!**/.*',
+				'!**/dev',
+				'!**/dev/**',
+				'!**/node_modules',
+				'!**/node_modules/**',
+				'!**/dist',
+				'!**/dist/**'])
+	    .pipe(p.using())
+	    .pipe(gulp.dest(caminhos.dist.origem))
+  });
+
+	return;
 })
 
 /**
@@ -220,6 +256,13 @@ gulp.task('watch', function() {
 	gulp.watch(caminhos.js.origem, ['js']);
 	gulp.watch(caminhos.libs.origem, ['libs']);
 	gulp.watch(caminhos.hogan.origem, ['hogan']);
+
+	// Arquivos .html/.php
+	gulp.watch(['**/*(.php|.html)','*(.php|.html)']], ()=>{
+		p.livereload.reload();
+
+		return;
+	};
 
 	// Imagens
 	var imgs = gulp.watch(caminhos.img.origem);
@@ -260,7 +303,8 @@ gulp.task('build', function(){
 	// Tarefas
 	runSequence(
 		'ver',
-		['css','js','libs','hogan']);
+		['css','js','libs','hogan'],
+		'dist');
 	// Tarefas
 });
 
