@@ -90,9 +90,10 @@ banner = ['',
 
 gulp.task('css', function(event) {
 	return gulp.src(caminhos.css.origem)
-		.pipe(p.plumber())
+		//.pipe(p.plumber({errorHandler: (a) => console.log(a)}))
 		// Pré-processamento
 		.pipe(p.sass())
+		.on('error', console.log)
 		.pipe(prd(p.shorthand()))
 		.pipe(p.pleeease({"minifier": prd(), "autoprefixer": {browsers: ['last 2 versions', 'ie 9', '> 1%']}}))
 		.pipe(prd(p.csso()))
@@ -127,6 +128,8 @@ gulp.task('js', function(event) {
 		.pipe(gulp.dest(caminhos.js.destino))
 		// Atualizar Navegador
 		.pipe(dev(p.livereload()));
+
+	return;
 })
 
 /*
@@ -258,11 +261,11 @@ gulp.task('watch', function() {
 	gulp.watch(caminhos.hogan.origem, ['hogan']);
 
 	// Arquivos .html/.php
-	gulp.watch(['**/*(.php|.html)','*(.php|.html)']], ()=>{
-		p.livereload.reload();
-
+	gulp.watch(['./**/*.php','./**/*.html'], (e)=>{
+		gulp.src(e.path)
+		.pipe(p.livereload());
 		return;
-	};
+	});
 
 	// Imagens
 	var imgs = gulp.watch(caminhos.img.origem);
@@ -271,6 +274,7 @@ gulp.task('watch', function() {
 		switch(event.type) {
 			case "added":
 			case "changed":
+			case "renamed":
 				gutil.log('Minificando ' + event.path);
 				gulp.src(event.path)
 					.pipe(p.plumber())
