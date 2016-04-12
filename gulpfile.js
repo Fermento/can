@@ -34,6 +34,8 @@ pkg = require('./package.json')
 
 //TODO: Kraken API Key/Switch
 
+// TODO: Criar um switch para usar como App (pasta app) ou Web (pastas CSS e JS) no dev.
+
 // Seta os caminhos padrão
 caminhos = {
 	"css": {
@@ -90,10 +92,9 @@ banner = ['',
 
 gulp.task('css', function(event) {
 	return gulp.src(caminhos.css.origem)
-		//.pipe(p.plumber({errorHandler: (a) => console.log(a)}))
+		.pipe(p.plumber({errorHandler: (a) => console.log(a); this.emit('end')}))
 		// Pré-processamento
 		.pipe(p.sass())
-		.on('error', console.log)
 		.pipe(prd(p.shorthand()))
 		.pipe(p.pleeease({"minifier": prd(), "autoprefixer": {browsers: ['last 2 versions', 'ie 9', '> 1%']}}))
 		.pipe(prd(p.csso()))
