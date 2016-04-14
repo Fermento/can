@@ -92,7 +92,7 @@ banner = ['',
 
 gulp.task('css', function(event) {
 	return gulp.src(caminhos.css.origem)
-		.pipe(p.plumber({errorHandler: (a) => console.log(a); this.emit('end')}))
+		.pipe(p.plumber({errorHandler: (a) => {console.log(a); this.emit('end')}}))
 		// Pré-processamento
 		.pipe(p.sass())
 		.pipe(prd(p.shorthand()))
