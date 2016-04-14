@@ -32,8 +32,6 @@ pkg = require('./package.json')
  * Configurações
  */
 
-//TODO: Kraken API Key/Switch
-
 // TODO: Criar um switch para usar como App (pasta app) ou Web (pastas CSS e JS) no dev.
 
 // Seta os caminhos padrão
@@ -84,6 +82,12 @@ banner = ['',
 	'', ''
 ].join('\n');
 
+// Gerenciador de Erros
+function handleError(err) {
+  console.log(err);
+  this.emit('end');
+}
+
 /*
  * CSS
  */
@@ -92,7 +96,7 @@ banner = ['',
 
 gulp.task('css', function(event) {
 	return gulp.src(caminhos.css.origem)
-		.pipe(p.plumber({errorHandler: (a) => {console.log(a); this.emit('end')}}))
+		.pipe(p.plumber({ errorHandler: handleError }))
 		// Pré-processamento
 		.pipe(p.sass())
 		.pipe(prd(p.shorthand()))
@@ -115,7 +119,7 @@ gulp.task('css', function(event) {
 //TODO: Output (Console)
 gulp.task('js', function(event) {
 	return gulp.src(caminhos.js.origem)
-		.pipe(p.plumber())
+		.pipe(p.plumber({ errorHandler: handleError }))
 		// JSHint
 		.pipe(dev(p.jshint({"asi":true})))
 		.pipe(dev(p.jshint.reporter('default')))
@@ -141,7 +145,7 @@ gulp.task('js', function(event) {
 
 gulp.task('hogan', function(event) {
 	return gulp.src(caminhos.hogan.origem)
-		.pipe(p.plumber())
+		.pipe(p.plumber({ errorHandler: handleError }))
 		// Compilador
 		.pipe(p.hoganPrecompile())
 		//.pipe(p.defineModule('plain'))
@@ -166,7 +170,7 @@ gulp.task('hogan', function(event) {
 //TODO: Sync (on Delete)
 gulp.task('img', function(a,b,c) {
 	return gulp.src(caminhos.img.origem)
-		.pipe(p.plumber())
+		.pipe(p.plumber({ errorHandler: handleError }))
 		// Minifica
 		.pipe(p.imagemin({ optimizationLevel: 3, progressive: true, interlaced: true, verbose: true, use: [pngquant()] }))
 		// Saída
@@ -278,7 +282,7 @@ gulp.task('watch', function() {
 			case "renamed":
 				gutil.log('Minificando ' + event.path);
 				gulp.src(event.path)
-					.pipe(p.plumber())
+					.pipe(p.plumber({ errorHandler: handleError }))
 					// Minifica
 					.pipe(p.imagemin({ optimizationLevel: 3, progressive: true, interlaced: true, verbose: true, use: [pngquant()] }))
 					// Saída
