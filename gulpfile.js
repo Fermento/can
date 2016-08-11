@@ -37,18 +37,18 @@ pkg = require('./package.json')
 // Seta os caminhos padrão
 caminhos = {
 	"css": {
-		"origem": path.join(PASTA_DEV, 'app/**/*.scss'),
-		"destino": path.join(PASTA_DEST, 'app/')
+		"origem": path.join(PASTA_DEV, 'dev/**/*.scss'),
+		"destino": path.join(PASTA_DEST, 'css/')
 	},
 
 	"js": {
-		"origem": path.join(PASTA_DEV, 'app/**/*.js'),
-		"destino": path.join(PASTA_DEST, 'app/')
+		"origem": path.join(PASTA_DEV, 'dev/**/*.js'),
+		"destino": path.join(PASTA_DEST, 'js/')
 	},
 
 	"hogan": {
-		"origem": path.join(PASTA_DEV, 'app/**/*.hogan'),
-		"destino": path.join(PASTA_DEST, 'app/')
+		"origem": path.join(PASTA_DEV, 'js/**/*.hogan'),
+		"destino": path.join(PASTA_DEST, 'js/')
 	},
 
 	"img": {
@@ -124,7 +124,7 @@ gulp.task('js', function(event) {
 		.pipe(dev(p.jshint({"asi":true})))
 		.pipe(dev(p.jshint.reporter('default')))
 		// Concatena arquivos
-		.pipe(p.concat('frmnt.js'))
+		.pipe(p.concat('frmnt.min.js'))
 		// Minificador
 		.pipe(prd(p.uglify()))
 		// Header
