@@ -37,12 +37,12 @@ pkg = require('./package.json')
 // Seta os caminhos padrão
 caminhos = {
 	"css": {
-		"origem": path.join(PASTA_DEV, 'dev/**/*.scss'),
+		"origem": path.join(PASTA_DEV, 'scss/**/*.scss'),
 		"destino": path.join(PASTA_DEST, 'css/')
 	},
 
 	"js": {
-		"origem": path.join(PASTA_DEV, 'dev/**/*.js'),
+		"origem": path.join(PASTA_DEV, 'js/**/*.js'),
 		"destino": path.join(PASTA_DEST, 'js/')
 	},
 
