@@ -1,23 +1,24 @@
 "use strict";
 
 // Módulos (Requires)
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var p = require('gulp-load-plugins')();
+const gulp = require('gulp');
+const gutil = require('gulp-util');
+const p = require('gulp-load-plugins')();
 
 // //// Utilitários
-var path = require('path');
-var rimraf = require('rimraf');
-var pngquant = require('imagemin-pngquant');
-var runSequence = require('run-sequence');
+const path = require('path');
+const rimraf = require('rimraf');
+const pngquant = require('imagemin-pngquant');
+const runSequence = require('run-sequence');
+const globParent = require('glob-parent');
 
 // Ambientes
-var dev = p.environments.development;
-var prd = p.environments.production;
+const dev = p.environments.development;
+const prd = p.environments.production;
 
 // Constantes
-var PASTA_DEV = 'dev/'
-var PASTA_DEST = 'res/'
+const PASTA_DEV = 'dev/'
+const PASTA_DEST = 'res/'
 
 // Variáveis públicas
 var banner = ""
@@ -84,8 +85,8 @@ banner = ['',
 
 // Gerenciador de Erros
 function handleError(err) {
-  console.log(err);
-  this.emit('end');
+	console.log(err);
+	this.emit('end');
 }
 
 /*
@@ -96,16 +97,25 @@ function handleError(err) {
 
 gulp.task('css', function(event) {
 	return gulp.src(caminhos.css.origem)
-		.pipe(p.plumber({ errorHandler: handleError }))
+		.pipe(p.plumber({
+			errorHandler: handleError
+		}))
 		// Pré-processamento
 		.pipe(p.sass())
 		.pipe(prd(p.shorthand()))
-		.pipe(p.pleeease({"minifier": prd(), "autoprefixer": {browsers: ['last 2 versions', 'ie 9', '> 1%']}}))
+		.pipe(p.pleeease({
+			"minifier": prd(),
+			"autoprefixer": {
+				browsers: ['last 2 versions', 'ie 9', '> 1%']
+			}
+		}))
 		.pipe(prd(p.csso()))
 		// Cabeçalho
 		.pipe(p.header(banner, pkg))
 		// Minificar e otimizar
-		.pipe(p.rename({extname: ".min.css"}))
+		.pipe(p.rename({
+			extname: ".min.css"
+		}))
 		.pipe(prd(p.size()))
 		.pipe(gulp.dest(caminhos.css.destino))
 		//
@@ -119,9 +129,13 @@ gulp.task('css', function(event) {
 //TODO: Output (Console)
 gulp.task('js', function(event) {
 	return gulp.src(caminhos.js.origem)
-		.pipe(p.plumber({ errorHandler: handleError }))
+		.pipe(p.plumber({
+			errorHandler: handleError
+		}))
 		// JSHint
-		.pipe(dev(p.jshint({"asi":true})))
+		.pipe(dev(p.jshint({
+			"asi": true
+		})))
 		.pipe(dev(p.jshint.reporter('default')))
 		// Concatena arquivos
 		.pipe(p.concat('frmnt.min.js'))
@@ -145,11 +159,16 @@ gulp.task('js', function(event) {
 
 gulp.task('hogan', function(event) {
 	return gulp.src(caminhos.hogan.origem)
-		.pipe(p.plumber({ errorHandler: handleError }))
+		.pipe(p.plumber({
+			errorHandler: handleError
+		}))
 		// Compilador
 		.pipe(p.hoganPrecompile())
 		//.pipe(p.defineModule('plain'))
-		.pipe(p.declare({namespace: 'App.Views', noRedeclare: true}))
+		.pipe(p.declare({
+			namespace: 'App.Views',
+			noRedeclare: true
+		}))
 		// Concatena arquivos
 		.pipe(p.concat('views.js'))
 		// Minificador
@@ -168,11 +187,19 @@ gulp.task('hogan', function(event) {
 
 //TODO: Kraken.io
 //TODO: Sync (on Delete)
-gulp.task('img', function(a,b,c) {
+gulp.task('minifyAll', function(a, b, c) {
 	return gulp.src(caminhos.img.origem)
-		.pipe(p.plumber({ errorHandler: handleError }))
+		.pipe(p.plumber({
+			errorHandler: handleError
+		}))
 		// Minifica
-		.pipe(p.imagemin({ optimizationLevel: 3, progressive: true, interlaced: true, verbose: true, use: [pngquant()] }))
+		.pipe(p.imagemin({
+			optimizationLevel: 3,
+			progressive: true,
+			interlaced: true,
+			verbose: true,
+			use: [pngquant()]
+		}))
 		// Saída
 		.pipe(gulp.dest(caminhos.img.destino))
 		// Atualizar Navegador
@@ -182,11 +209,13 @@ gulp.task('img', function(a,b,c) {
 /*
  * Incrementa versão
  */
-gulp.task('ver', function(){
+gulp.task('ver', function() {
 	// Incrementa versão
 	gulp.src('./package.json')
-    .pipe(p.bump({type: 'minor'}))
-    .pipe(gulp.dest('./'))
+		.pipe(p.bump({
+			type: 'minor'
+		}))
+		.pipe(gulp.dest('./'))
 });
 
 /*
@@ -209,7 +238,6 @@ gulp.task('libs', function(event) {
 
 gulp.task('initDir', function(event) {
 	var mkdirp = require('mkdirp');
-	var globParent = require('glob-parent');
 
 	for (let key in caminhos) {
 		mkdirp(globParent(caminhos[key].origem));
@@ -227,8 +255,8 @@ gulp.task('initDir', function(event) {
 gulp.task('dist', function(event) {
 	// Limpa pasta de deploy
 	gutil.log("Limpando /dist");
-	rimraf('/dist/**', function (er) {
-    // Seleciona arquivos
+	rimraf('/dist/**', function(er) {
+		// Seleciona arquivos
 		gutil.log("Gerando /dist");
 		gulp.src([
 				'**/*',
@@ -241,10 +269,11 @@ gulp.task('dist', function(event) {
 				'!**/node_modules',
 				'!**/node_modules/**',
 				'!**/dist',
-				'!**/dist/**'])
-	    .pipe(p.using())
-	    .pipe(gulp.dest(caminhos.dist.origem))
-  });
+				'!**/dist/**'
+			])
+			.pipe(p.using())
+			.pipe(gulp.dest(caminhos.dist.origem))
+	});
 
 	return;
 })
@@ -266,27 +295,40 @@ gulp.task('watch', function() {
 	gulp.watch(caminhos.hogan.origem, ['hogan']);
 
 	// Arquivos .html/.php
-	gulp.watch(['./**/*.php','./**/*.html'], (e)=>{
+	gulp.watch(['./**/*.php', './**/*.html'], (e) => {
 		gulp.src(e.path)
-		.pipe(p.livereload());
+			.pipe(p.livereload());
 		return;
 	});
 
 	// Imagens
-	var imgs = gulp.watch(caminhos.img.origem);
-	imgs.on('change', function(event){
+	let imgs = gulp.watch(caminhos.img.origem);
+	let imagemRoot = globParent(caminhos.img.origem);
+
+	imgs.on('change', function(event) {
 		// type: deleted, changed, added, path: filename
-		switch(event.type) {
+		switch (event.type) {
 			case "added":
 			case "changed":
 			case "renamed":
 				gutil.log('Minificando ' + event.path);
+				// Determina o caminho final do arquivo alterado (mantendo estrutura de pastas)
+				let destinationPath = path.dirname(path.relative(path.resolve(imagemRoot), path.resolve(event.path)));
+
 				gulp.src(event.path)
-					.pipe(p.plumber({ errorHandler: handleError }))
+					.pipe(p.plumber({
+						errorHandler: handleError
+					}))
 					// Minifica
-					.pipe(p.imagemin({ optimizationLevel: 3, progressive: true, interlaced: true, verbose: true, use: [pngquant()] }))
+					.pipe(p.imagemin({
+						optimizationLevel: 3,
+						progressive: true,
+						interlaced: true,
+						verbose: true,
+						use: [pngquant()]
+					}))
 					// Saída
-					.pipe(gulp.dest(caminhos.img.destino))
+					.pipe(gulp.dest(path.join(caminhos.img.destino, destinationPath)))
 					// Atualizar Navegador
 					.pipe(dev(p.livereload()));
 				break;
@@ -302,7 +344,7 @@ gulp.task('watch', function() {
 /*
  * Preparar para deploy
  */
-gulp.task('build', function(){
+gulp.task('build', function() {
 	// Seta Producao
 	p.environments.current(prd);
 
@@ -311,8 +353,7 @@ gulp.task('build', function(){
 
 	// Tarefas
 	runSequence(
-		'ver',
-		['css','js','libs','hogan'],
+		'ver', ['css', 'js', 'libs', 'hogan'],
 		'dist');
 	// Tarefas
 });
