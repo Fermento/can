@@ -106,7 +106,7 @@ gulp.task('css', function(event) {
 		.pipe(p.pleeease({
 			"minifier": prd(),
 			"autoprefixer": {
-				browsers: ['last 2 versions', 'ie 9', '> 1%']
+				browsers: ['last 2 versions', 'ie 10', '> 1%']
 			}
 		}))
 		.pipe(prd(p.csso()))
@@ -311,7 +311,7 @@ gulp.task('watch', function() {
 			case "added":
 			case "changed":
 			case "renamed":
-				gutil.log('Minificando ' + event.path);
+				gutil.log('Minificando ' + path.relative(path.resolve(imagemRoot), path.resolve(event.path)));
 				// Determina o caminho final do arquivo alterado (mantendo estrutura de pastas)
 				let destinationPath = path.dirname(path.relative(path.resolve(imagemRoot), path.resolve(event.path)));
 
