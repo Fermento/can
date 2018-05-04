@@ -4,6 +4,8 @@
 const gulp = require('gulp');
 const gutil = require('gulp-util');
 const p = require('gulp-load-plugins')();
+const cssnano = require('cssnano');
+const autoprefixer = require('autoprefixer');
 
 // //// Utilitários
 const path = require('path');
@@ -85,7 +87,7 @@ banner = ['',
 
 // Gerenciador de Erros
 function handleError(err) {
-	console.log(err);
+	gutil.log(err);
 	this.emit('end');
 }
 
@@ -100,16 +102,10 @@ gulp.task('css', function(event) {
 		.pipe(p.plumber({
 			errorHandler: handleError
 		}))
+		.pipe(p.sourcemaps.init())
 		// Pré-processamento
 		.pipe(p.sass())
-		.pipe(prd(p.shorthand()))
-		.pipe(p.pleeease({
-			"minifier": prd(),
-			"autoprefixer": {
-				browsers: ['last 2 versions', 'ie 10', '> 1%']
-			}
-		}))
-		.pipe(prd(p.csso()))
+		.pipe(prd(p.postcss([cssnano, autoprefixer])))
 		// Cabeçalho
 		.pipe(p.header(banner, pkg))
 		// Minificar e otimizar
@@ -117,6 +113,7 @@ gulp.task('css', function(event) {
 			extname: ".min.css"
 		}))
 		.pipe(prd(p.size()))
+		.pipe(p.sourcemaps.write('.'))
 		.pipe(gulp.dest(caminhos.css.destino))
 		//
 		.pipe(dev(p.livereload()))
