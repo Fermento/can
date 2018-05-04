@@ -74,7 +74,7 @@ banner = ['',
 	'/**',
 	'   oO0K0kdc.   .o',
 	' :ko,.  ...",::;dk,     fermen.to',
-	'oK.            .K,      <%= name %> - v<%= version %>', //
+	'oK.            .K,',
 	'0x    .K:      x0',
 	'"0:   dk.    .,KO:o."',
 	'  ":;:.    ck"cX:',
