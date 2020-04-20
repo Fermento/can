@@ -1,360 +1,117 @@
-"use strict";
-
-// Módulos (Requires)
-const gulp = require('gulp');
-const gutil = require('gulp-util');
-const p = require('gulp-load-plugins')();
-const cssnano = require('cssnano');
-const autoprefixer = require('autoprefixer');
-
-// //// Utilitários
-const path = require('path');
-const rimraf = require('rimraf');
-const pngquant = require('imagemin-pngquant');
-const runSequence = require('run-sequence');
-const globParent = require('glob-parent');
-
-// Ambientes
-const dev = p.environments.development;
-const prd = p.environments.production;
+let gulp = require("gulp");
+let sass = require("gulp-sass");
+let autoprefixer = require("gulp-autoprefixer");
+let concat = require("gulp-concat");
+let uglify = require('gulp-uglify-es').default;
+let csso = require('gulp-csso');
+let rename = require('gulp-rename');
+let header = require('gulp-header');
+let path = require('path');
+let reload = require('gulp-livereload');
 
 // Constantes
-const PASTA_DEV = 'dev/'
-const PASTA_DEST = 'res/'
+const DEV_FOLDER = 'dev/';
+const DEST_FOLDER = 'res/';
 
-// Variáveis públicas
-var banner = ""
-var caminhos = {}
-var pkg;
-var worker;
-
-// Configurações do Package (projeto)
-pkg = require('./package.json')
-
-/*
- * Configurações
- */
-
-// TODO: Criar um switch para usar como App (pasta app) ou Web (pastas CSS e JS) no dev.
-
-// Seta os caminhos padrão
-caminhos = {
-	"css": {
-		"origem": path.join(PASTA_DEV, 'scss/**/*.scss'),
-		"destino": path.join(PASTA_DEST, 'css/')
-	},
-
-	"js": {
-		"origem": path.join(PASTA_DEV, 'js/**/*.js'),
-		"destino": path.join(PASTA_DEST, 'js/')
-	},
-
-	"hogan": {
-		"origem": path.join(PASTA_DEV, 'js/**/*.hogan'),
-		"destino": path.join(PASTA_DEST, 'js/')
-	},
-
-	"img": {
-		"origem": path.join(PASTA_DEV, 'img/**/*'),
-		"destino": path.join(PASTA_DEST, 'img/')
-	},
-
-	"libs": {
-		"origem": path.join(PASTA_DEV, 'lib/**/*.!(md|txt|html|json)'),
-		"destino": path.join(PASTA_DEST, 'lib/')
-	},
-
-	"dist": {
-		"origem": 'dist/',
-	}
-}
-
-// Banner (meta)
-banner = ['',
-	'/**',
-	'   oO0K0kdc.   .o',
-	' :ko,.  ...",::;dk,     fermen.to',
-	'oK.            .K,',
-	'0x    .K:      x0',
-	'"0:   dk.    .,KO:o."',
-	'  ":;:.    ck"cX:',
-	'       ,  ,.  kO',
-	'     ;K:     :K.',
-	'     ,0,   .od.',
-	'      .oOOOo.*/',
-	'', ''
+const banner = ['',
+'/*',
+"                                @",
+"                             @@@",
+"                ,cool:     @@@@@@@@@@@@@  @@@@@@",
+"   ';;;,       ckOkkkko'    @@@  @@@  @@@@@@",
+"  cxOOOko,     lkOOkkkd,    @@   @@      @@@",
+" ;k0OOOOOl     'lxkkxo;    @@@   @@@@@@@ @@",
+" 'dO000Ox;        ,,'",
+"   ;lll:'                   @@@@@@@@@@@@ @@@@@@@ &@@@@@@",
+"            ',,,'           @@  @@@  @@@*@@@@@@@ @@/  @@",
+"          ,okOOOkd:        @@@  @@@  @@ @@@     @@@  @@@",
+"          o0000OOOx,       @@   @@  @@@  ,@@@@  @@@  @@,",
+"          ck00000Oo'            @@@",
+"           ,loool:             @@@@@@ @@@@@@",
+"                               @@@   @@   @@",
+"                               @@@  @@@  @@@",
+"                           @@@ @@@@@ @@@@@@",
+'*/', ''
 ].join('\n');
 
-// Gerenciador de Erros
-function handleError(err) {
-	gutil.log(err);
-	this.emit('end');
+var css = {
+	src: path.join(DEV_FOLDER, 'scss/**/*.scss'),
+	dest: path.join(DEST_FOLDER, 'css/'),
+	filename: 'app.scss'
+};
+
+var js = {
+	src: path.join(DEV_FOLDER, 'js/**/*.js'),
+	dest: path.join(DEST_FOLDER, 'js/'),
+	filename: 'frmnt.js'
+};
+
+var img = {
+	src: path.join(DEV_FOLDER, 'img/**/*'),
+	dest: path.join(DEST_FOLDER, 'img/'),
+	filenames: '',
 }
 
-/*
- * CSS
- */
-
-//TODO: Output (console)
-
-gulp.task('css', function(event) {
-	return gulp.src(caminhos.css.origem)
-		.pipe(p.plumber({
-			errorHandler: handleError
-		}))
-		.pipe(p.sourcemaps.init())
-		// Pré-processamento
-		.pipe(p.sass())
-		.pipe(prd(p.postcss([cssnano, autoprefixer])))
-		// Cabeçalho
-		.pipe(p.header(banner, pkg))
-		// Minificar e otimizar
-		.pipe(p.rename({
-			extname: ".min.css"
-		}))
-		.pipe(prd(p.size()))
-		.pipe(p.sourcemaps.write('.'))
-		.pipe(gulp.dest(caminhos.css.destino))
-		//
-		.pipe(dev(p.livereload()))
-});
-
-/*
- * Scripts (JS)
- */
-
-//TODO: Output (Console)
-gulp.task('js', function(event) {
-	return gulp.src(caminhos.js.origem)
-		.pipe(p.plumber({
-			errorHandler: handleError
-		}))
-		// JSHint
-		.pipe(dev(p.jshint({
-			"asi": true
-		})))
-		.pipe(dev(p.jshint.reporter('default')))
-		// Concatena arquivos
-		.pipe(p.concat('frmnt.min.js'))
-		// Minificador
-		.pipe(prd(p.uglify()))
-		// Header
-		.pipe(p.header(banner, pkg))
-		// Saída
-		.pipe(gulp.dest(caminhos.js.destino))
-		// Atualizar Navegador
-		.pipe(dev(p.livereload()));
-
-	return;
-})
-
-/*
- * Hogan
- */
-
-//TODO: Output (Console)
-
-gulp.task('hogan', function(event) {
-	return gulp.src(caminhos.hogan.origem)
-		.pipe(p.plumber({
-			errorHandler: handleError
-		}))
-		// Compilador
-		.pipe(p.hoganPrecompile())
-		//.pipe(p.defineModule('plain'))
-		.pipe(p.declare({
-			namespace: 'App.Views',
-			noRedeclare: true
-		}))
-		// Concatena arquivos
-		.pipe(p.concat('views.js'))
-		// Minificador
-		.pipe(prd(p.uglify()))
-		// Header
-		.pipe(p.header(banner, pkg))
-		// Saída
-		.pipe(gulp.dest(caminhos.hogan.destino))
-		// Atualizar Navegador
-		.pipe(dev(p.livereload()));
-})
-
-/*
- * Imagens
- */
-
-//TODO: Kraken.io
-//TODO: Sync (on Delete)
-gulp.task('minifyAll', function(a, b, c) {
-	return gulp.src(caminhos.img.origem)
-		.pipe(p.plumber({
-			errorHandler: handleError
-		}))
-		// Minifica
-		.pipe(p.imagemin({
-			optimizationLevel: 3,
-			progressive: true,
-			interlaced: true,
-			verbose: true,
-			use: [pngquant()]
-		}))
-		// Saída
-		.pipe(gulp.dest(caminhos.img.destino))
-		// Atualizar Navegador
-		.pipe(dev(p.livereload()));
-})
-
-/*
- * Incrementa versão
- */
-gulp.task('ver', function() {
-	// Incrementa versão
-	gulp.src('./package.json')
-		.pipe(p.bump({
-			type: 'minor'
-		}))
-		.pipe(gulp.dest('./'))
-});
-
-/*
- * Libs (JS)
- */
-
-//TODO: Output (Console)
-
-gulp.task('libs', function(event) {
-	return gulp.src(caminhos.libs.origem)
-		// Saída
-		.pipe(gulp.dest(caminhos.libs.destino))
-})
-
-/*
- * Inicializa Pasta
- */
-
-//TODO: Output (Console)
-
-gulp.task('initDir', function(event) {
-	var mkdirp = require('mkdirp');
-
-	for (let key in caminhos) {
-		mkdirp(globParent(caminhos[key].origem));
+// #TODO: Gerar minificado no prd e normal no dev (habilitar seletor por env).
+function style() {
+	return (
+		gulp
+		.src(css.src)
+		.pipe(concat(css.filename))
+		.pipe(sass())
+		.on("error", sass.logError)
+		.pipe(autoprefixer())
+		.pipe(header(banner))
+		.pipe(gulp.dest(css.dest))
+		.pipe(csso())
+		.pipe(rename({extname: '.min.css'}))
+		.pipe(header(banner))
+		.pipe(gulp.dest(css.dest))
+		.pipe(reload())
+		);
 	}
-
-	return;
-});
-
-/*
- * Gera output
- */
-
-//TODO: Output (Console)
-
-gulp.task('dist', function(event) {
-	// Limpa pasta de deploy
-	gutil.log("Limpando /dist");
-	rimraf('/dist/**', function(er) {
-		// Seleciona arquivos
-		gutil.log("Gerando /dist");
-		gulp.src([
-				'**/*',
-				'!package.json',
-				'!gulpfile.js',
-				'!bower.json',
-				'!**/.*',
-				'!**/dev',
-				'!**/dev/**',
-				'!**/node_modules',
-				'!**/node_modules/**',
-				'!**/dist',
-				'!**/dist/**'
-			])
-			.pipe(p.using())
-			.pipe(gulp.dest(caminhos.dist.origem))
-	});
-
-	return;
-})
-
-/**
- ** Watch
- **/
-gulp.task('watch', function() {
-	// Iniciar LiveReload
-	p.livereload.listen();
-
-	// Iniciarlizar pastas
-	gulp.start('initDir');
-
-	// Watches
-	gulp.watch(caminhos.css.origem, ['css']);
-	gulp.watch(caminhos.js.origem, ['js']);
-	gulp.watch(caminhos.libs.origem, ['libs']);
-	gulp.watch(caminhos.hogan.origem, ['hogan']);
-
-	// Arquivos .html/.php
-	gulp.watch(['./**/*.php', './**/*.html'], (e) => {
-		gulp.src(e.path)
-			.pipe(p.livereload());
-		return;
-	});
-
-	// Imagens
-	let imgs = gulp.watch(caminhos.img.origem);
-	let imagemRoot = globParent(caminhos.img.origem);
-
-	imgs.on('change', function(event) {
-		// type: deleted, changed, added, path: filename
-		switch (event.type) {
-			case "added":
-			case "changed":
-			case "renamed":
-				gutil.log('Minificando ' + path.relative(path.resolve(imagemRoot), path.resolve(event.path)));
-				// Determina o caminho final do arquivo alterado (mantendo estrutura de pastas)
-				let destinationPath = path.dirname(path.relative(path.resolve(imagemRoot), path.resolve(event.path)));
-
-				gulp.src(event.path)
-					.pipe(p.plumber({
-						errorHandler: handleError
-					}))
-					// Minifica
-					.pipe(p.imagemin({
-						optimizationLevel: 3,
-						progressive: true,
-						interlaced: true,
-						verbose: true,
-						use: [pngquant()]
-					}))
-					// Saída
-					.pipe(gulp.dest(path.join(caminhos.img.destino, destinationPath)))
-					// Atualizar Navegador
-					.pipe(dev(p.livereload()));
-				break;
-
-			case "deleted":
-				console.log("del.sync");
-				break;
+	
+	// #TODO: Gerar minificado no prd e normal no dev (habilitar seletor por env).
+	function script() {
+		return (
+			gulp
+			.src(js.src)
+			.pipe(concat(js.filename))
+			.pipe(gulp.dest(js.dest))
+			.pipe(uglify())
+			.pipe(rename({extname: '.min.js'}))
+			.pipe(gulp.dest(js.dest))
+			.pipe(reload())
+			);
 		}
-	});
+		
+		function images() {
+			
+		}
 
-});
-
-/*
- * Preparar para deploy
- */
-gulp.task('build', function() {
-	// Seta Producao
-	p.environments.current(prd);
-
-	// Log
-	gutil.log('Gerando Produção');
-
-	// Tarefas
-	runSequence(
-		'ver', ['css', 'js', 'libs', 'hogan'],
-		'dist');
-	// Tarefas
-});
-
-
-// Define a tarefa padrão
-gulp.task('default', ['watch']);
+		function html() {
+			return (
+				gulp
+				.src(['./**/*.php', './**/*.html'])
+				.pipe(reload())
+				);
+		}
+		
+		function watch(){
+			// Iniciar LiveReload
+			reload.listen();
+			
+			// Watch
+			gulp.watch(css.src, style);
+			gulp.watch(js.src, script);
+			// Arquivos .html/.php
+			gulp.watch(['./**/*.php', './**/*.html']).on("change", (path, stats) => {
+				gulp.src(path).pipe(reload());
+			});
+		}
+		
+		exports.css = style;
+		exports.js = script;
+		exports.img = images;
+		
+		exports.default = exports.watch = watch;
