@@ -35,7 +35,7 @@ const banner = ['',
 ].join('\n');
 
 var css = {
-	src: path.join(DEV_FOLDER, 'scss/**/*.scss'),
+	src: path.join(DEV_FOLDER, 'scss/app.scss'),
 	dest: path.join(DEST_FOLDER, 'css/'),
 	filename: 'app.scss'
 };
