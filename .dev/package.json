@@ -1,7 +1,7 @@
 {
     "scripts": {
         "dev": "parcel 'src/*.html'",
-        "fermen": "sh ./echo.sh",
+        "fermen": "sh ./fermen.sh",
         "build": "parcel build 'src/*.html' --dist-dir ../"
     },
     "devDependencies": {
